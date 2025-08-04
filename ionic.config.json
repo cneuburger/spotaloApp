@@ -1,0 +1,7 @@
+{
+  "name": "spotalo",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
