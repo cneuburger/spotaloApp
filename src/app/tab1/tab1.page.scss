@@ -1,9 +1,13 @@
-ion-content, .map-container, #map {
-  height: 100%;
-  --overflow: visible;
+.map-page { 
+    background: transparent !important;
+    --background: transparent !important;
 }
-
-#map {
-  height: 100%;
-  width: 100%;
+.map-wrap {
+    position: absolute;
+    inset: 0;                 /* top:0; right:0; bottom:0; left:0 */
+}
+capacitor-google-map { 
+    display:block; 
+    width:100%; 
+    height:100%; 
 }

@@ -35,3 +35,17 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+body.map-active, 
+body.map-active ion-app,
+body.map-active ion-router-outlet,
+body.map-active ion-content {
+  background: transparent !important;
+  --background: transparent !important;
+}
+
+body.map-active capacitor-google-map {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

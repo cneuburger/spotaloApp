@@ -1,12 +1,5 @@
-<ion-content [fullscreen]="true">
-  <div id="mapContainer">
-    <div id="map">
-      <!--
-      <div id="map-loader"><p>Karte wird geladen ...</p></div>
-      -->
-    </div>
-    <!--
-    <button id="refreshButton" (click)="refreshMap()">Refresh Button</button>
-    -->
+<ion-content class="map-page">
+  <div class="map-wrap">
+    <capacitor-google-map #mapEl></capacitor-google-map>
   </div>
 </ion-content>

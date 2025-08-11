@@ -41,10 +41,12 @@ export class LocationService {
     } catch (error) {
       console.error('Fehler beim Abrufen der Geoposition:', error);
       // Optional: Fallback-Location setzen
+      /*
       this.locationData = {
         lat: 51.5074, // London
         lng: -0.1278
       };
+      */
     }
   }
 
