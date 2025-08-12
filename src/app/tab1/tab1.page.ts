@@ -1,14 +1,16 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, ViewChild } from '@angular/core';
-import { IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonButton } from '@ionic/angular/standalone';
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
 import { GoogleMap } from '@capacitor/google-maps';
 import { LocationService } from '../services/location.service';
+import { ApiService } from '../services/api.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss'],
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, ExploreContainerComponent],
+  imports: [IonHeader, IonToolbar, IonTitle, IonContent, ExploreContainerComponent, IonButton],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class Tab1Page {
@@ -16,7 +18,13 @@ export class Tab1Page {
   @ViewChild('mapEl', { read: ElementRef }) mapEl!: ElementRef<HTMLElement>;
   map: GoogleMap | undefined;
 
-  constructor(private locationService: LocationService) {}
+  appUserLatitude: number = 0;
+  appUserLongitude: number = 0;
+
+  constructor(
+    private locationService: LocationService,
+    private apiService: ApiService
+  ) {}
 
   async ngAfterViewInit() {
     await this.initMap(); // wie oben
@@ -47,10 +55,13 @@ export class Tab1Page {
       let lat: number = loc.lat; // 48.24817;
       let lng: number = loc.lng; // 13.19592;
 
+      this.appUserLatitude = lat;
+      this.appUserLongitude = lng;
+
       this.map = await GoogleMap.create({
         id: 'main-map',
         element: el,
-        apiKey: 'AIzaSyChuMIoGrgYGRrU8RE9-z-HYTWgqjJ2_kU', 
+        apiKey: environment.googleMapsApiKey, 
         config: {
           center: { lat: lat, lng: lng }, // Wien 😉
           zoom: 12,
@@ -76,6 +87,21 @@ export class Tab1Page {
     } else {
       console.error('Location nicht verfügbar');
     }    
+  }
+
+
+  async onSubmitMessage() {
+
+    let apiResponse = null;
+
+    const params = {
+      createdFrom: 1,
+      text: 'abc',
+      latitude: this.appUserLatitude,
+      longitude: this.appUserLongitude
+    };
+
+    apiResponse = await this.apiService.postSpot(params);
   }
 
 }
