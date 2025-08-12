@@ -5,6 +5,9 @@ import { GoogleMap } from '@capacitor/google-maps';
 import { LocationService } from '../services/location.service';
 import { ApiService } from '../services/api.service';
 import { environment } from 'src/environments/environment';
+import { PostingComponent } from '../components/posting/posting.component';
+import { ModalController } from '@ionic/angular';
+
 
 @Component({
   selector: 'app-tab1',
@@ -20,10 +23,12 @@ export class Tab1Page {
 
   appUserLatitude: number = 0;
   appUserLongitude: number = 0;
+  sheetOpen: boolean = false;
 
   constructor(
     private locationService: LocationService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private modalCtrl: ModalController
   ) {}
 
   async ngAfterViewInit() {
@@ -97,11 +102,66 @@ export class Tab1Page {
     const params = {
       createdFrom: 1,
       text: 'abc',
+      category: 1,
       latitude: this.appUserLatitude,
       longitude: this.appUserLongitude
     };
 
     apiResponse = await this.apiService.postSpot(params);
+  }
+
+  async openSheet() {
+    document.body.classList.remove('map-active');
+    const modal = await this.modalCtrl.create({
+      component: PostingComponent,   // eigene kleine Komponente
+      breakpoints: [0, 0.35, 0.6],
+      initialBreakpoint: 0.35,
+      cssClass: 'my-sheet',
+      componentProps: { center: { lat: 48.20849, lng: 16.37208 } }, // optional
+    });
+    modal.onWillDismiss().then(() => document.body.classList.add('map-active'));
+
+
+    await modal.present();
+    const { data, role } = await modal.onWillDismiss();
+
+    // Map-Transparenz wieder an
+    document.body.classList.add('map-active');
+
+    switch (role) {
+      case 'recenter': this.recenter(); break;
+      case 'favorite': this.favorite(); break;
+      case 'share':    this.share();    break;
+      default: break; // cancel/Backdrop
+    }    
+
+
+  }
+
+  openSheetOld() {
+    this.sheetOpen = true;
+    document.body.classList.remove('map-active'); // Map-Transparenz aus
+  }
+
+  onSheetDismiss() {
+    this.sheetOpen = false;
+    document.body.classList.add('map-active');    // Map-Transparenz wieder an
+  }
+
+    
+  recenter() {
+    console.log('recenter ...'); 
+    /* ... */ 
+  }
+
+  favorite() { 
+    console.log('favorite ...');
+    /* ... */ 
+  }
+
+  share() { 
+    console.log('share ... ');
+    /* ... */ 
   }
 
 }

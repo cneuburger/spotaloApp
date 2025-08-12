@@ -1,0 +1,17 @@
+    <ion-content class="ion-padding">
+      <h3>Aktionen</h3>
+      <ion-list inset="true">
+        <ion-item button (click)="close('recenter')">
+          <ion-icon slot="start" name="locate"></ion-icon>
+          <ion-label>Hierhin zentrieren</ion-label>
+        </ion-item>
+        <ion-item button (click)="close('favorite')">
+          <ion-icon slot="start" name="star"></ion-icon>
+          <ion-label>Als Favorit</ion-label>
+        </ion-item>
+        <ion-item button (click)="close('share')">
+          <ion-icon slot="start" name="share-social"></ion-icon>
+          <ion-label>Teilen</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-content>

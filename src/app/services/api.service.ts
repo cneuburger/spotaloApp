@@ -15,8 +15,11 @@ export class ApiService {
     const options={
       method: 'POST',
       url: this.apiEndpoint + 'spots',
-      params: params,
-      headers: {apikey: this.apiKey},
+      data: params,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        apikey: this.apiKey
+      },
     }
 
     const response:HttpResponse=await CapacitorHttp.post(options);
