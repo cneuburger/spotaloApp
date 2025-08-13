@@ -3,42 +3,45 @@
     <capacitor-google-map #mapEl></capacitor-google-map>
   </div>
 
-  <!-- Overlay-Button -->
-  <ion-fab slot="fixed" vertical="bottom" horizontal="center">
-    <ion-fab-button (click)="openSheet()">
-      <ion-icon name="ellipsis-vertical"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
+  <ion-button expand="full">test</ion-button>
+  <ion-button (click)="openSheet()">Open2</ion-button>
 
-  
-  <ion-modal
-    [isOpen]="sheetOpen"
-    (willDismiss)="onSheetDismiss()"
-    [breakpoints]="[0, 0.35, 0.6, 0.9]"
-    [initialBreakpoint]="0.35"
-    handleBehavior="cycle" 
-    class="my-sheet"
-  >
-    <ng-template>
-      <!-- eigenes ion-content im Modal -->
-      <ion-content class="ion-padding">
-        <h3 class="ion-margin-bottom">Aktionen</h3>
-        <ion-list inset="true">
-          <ion-item button (click)="recenter(); sheetOpen=false">
-            <ion-icon slot="start" name="locate"></ion-icon>
-            <ion-label>Hierhin zentrieren</ion-label>
-          </ion-item>
-          <ion-item button (click)="favorite(); sheetOpen=false">
-            <ion-icon slot="start" name="star"></ion-icon>
-            <ion-label>Als Favorit</ion-label>
-          </ion-item>
-          <ion-item button (click)="share(); sheetOpen=false">
-            <ion-icon slot="start" name="share-social"></ion-icon>
-            <ion-label>Teilen</ion-label>
-          </ion-item>
-        </ion-list>
-      </ion-content>
-    </ng-template>
-  </ion-modal>
-  <button class="debug-btn" (click)="openSheet()">⋮</button>
+  <!-- Custom Sheet -->
+  <div class="sheet" [class.open]="sheetOpen" (click)="sheetOpen=false">
+    <div class="sheet-panel" (click)="$event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <h3 class="ion-margin-bottom">Aktionen</h3>
+      <ion-list>
+        <ion-item button (click)="leaveMessage(); sheetOpen=false">
+          <ion-icon slot="start" name="locate"></ion-icon>
+          <ion-label>Hier Nachricht hinterlassen</ion-label>
+        </ion-item>
+        <ion-item button (click)="recommend(); sheetOpen=false">
+          <ion-icon slot="start" name="heart"></ion-icon>
+          <ion-label>Diesen Ort empfehlen</ion-label>
+        </ion-item>          
+        <ion-item button (click)="share(); sheetOpen=false">
+          <ion-icon slot="start" name="share-social"></ion-icon>
+          <ion-label>Teilen ...</ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+  </div>  
+
+  <div class="sheet" [class.open]="messageBoxOpen" (click)="messageBoxOpen=false">
+    <div class="sheet-panel" (click)="$event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <h3 class="ion-margin-bottom">Nachricht hinterlassen</h3>
+      <ion-list inset="true">
+        <ion-item>
+          <ion-textarea [(ngModel)]="textMessage" autoGrow="true"></ion-textarea>
+        </ion-item>
+
+        <ion-item>
+          <ion-button type="button" expand="full" (click)="onSubmitMessage()">Nachricht senden</ion-button>
+        </ion-item>
+      </ion-list>
+    </div>
+  </div>
+  <ion-button (click)="sheetOpen=true" style="position: absolute; bottom: 0;">Open1</ion-button>
 </ion-content>

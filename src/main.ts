@@ -6,13 +6,15 @@ import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { ModalController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { locate, star, shareSocial, ellipsisVertical } from 'ionicons/icons';
+import { locate, star, shareSocial, ellipsisVertical, thumbsUp, heart } from 'ionicons/icons';
 
 addIcons({
   locate,                // <ion-icon name="locate">
   star,                  // <ion-icon name="star">
   'share-social': shareSocial,      // <ion-icon name="share-social">
-  'ellipsis-vertical': ellipsisVertical // <ion-icon name="ellipsis-vertical">
+  'ellipsis-vertical': ellipsisVertical, // <ion-icon name="ellipsis-vertical">
+  'thumbs-up': thumbsUp,
+  heart
 });
 
 bootstrapApplication(AppComponent, {

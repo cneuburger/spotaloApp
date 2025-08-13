@@ -1,19 +1,20 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, ViewChild } from '@angular/core';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonButton } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonTextarea } from '@ionic/angular/standalone';
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
 import { GoogleMap } from '@capacitor/google-maps';
 import { LocationService } from '../services/location.service';
 import { ApiService } from '../services/api.service';
 import { environment } from 'src/environments/environment';
-import { PostingComponent } from '../components/posting/posting.component';
 import { ModalController } from '@ionic/angular';
+import { FormsModule } from '@angular/forms';
 
 
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss'],
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, ExploreContainerComponent, IonButton],
+  standalone: true,
+  imports: [IonContent, IonButton, FormsModule, IonTextarea],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class Tab1Page {
@@ -24,6 +25,8 @@ export class Tab1Page {
   appUserLatitude: number = 0;
   appUserLongitude: number = 0;
   sheetOpen: boolean = false;
+  messageBoxOpen: boolean = false;
+  textMessage: string = '';
 
   constructor(
     private locationService: LocationService,
@@ -32,13 +35,13 @@ export class Tab1Page {
   ) {}
 
   async ngAfterViewInit() {
-    await this.initMap(); // wie oben
+//    await this.initMap(); // wie oben
   }
 
   ionViewDidEnter() { 
 
     requestAnimationFrame(() => this.initMap());
-    // this.initMap(); 
+    this.initMap(); 
   }
 
   ionViewWillEnter() {
@@ -50,15 +53,19 @@ export class Tab1Page {
   }
 
   async initMap() {
-    // const el = document.getElementById('map') as HTMLElement;
     const el = this.mapEl.nativeElement;
-    await this.locationService.initGeoLocation();
-    const loc = this.locationService.locationData;
+    // await this.locationService.initGeoLocation();
+    // const loc = this.locationService.locationData;
+
+    const loc = true;
 
     if (loc) { 
 
-      let lat: number = loc.lat; // 48.24817;
-      let lng: number = loc.lng; // 13.19592;
+      //let lat: number = loc.lat; 
+      //let lng: number = loc.lng; 
+
+      let lat: number = 48.24817;
+      let lng: number = 13.19592;      
 
       this.appUserLatitude = lat;
       this.appUserLongitude = lng;
@@ -98,47 +105,22 @@ export class Tab1Page {
   async onSubmitMessage() {
 
     let apiResponse = null;
+    console.log('textmessage: ', this.textMessage);
 
     const params = {
       createdFrom: 1,
-      text: 'abc',
+      text: this.textMessage,
       category: 1,
       latitude: this.appUserLatitude,
       longitude: this.appUserLongitude
     };
 
     apiResponse = await this.apiService.postSpot(params);
+    this.textMessage = '';
+    this.messageBoxOpen = false;
   }
 
-  async openSheet() {
-    document.body.classList.remove('map-active');
-    const modal = await this.modalCtrl.create({
-      component: PostingComponent,   // eigene kleine Komponente
-      breakpoints: [0, 0.35, 0.6],
-      initialBreakpoint: 0.35,
-      cssClass: 'my-sheet',
-      componentProps: { center: { lat: 48.20849, lng: 16.37208 } }, // optional
-    });
-    modal.onWillDismiss().then(() => document.body.classList.add('map-active'));
-
-
-    await modal.present();
-    const { data, role } = await modal.onWillDismiss();
-
-    // Map-Transparenz wieder an
-    document.body.classList.add('map-active');
-
-    switch (role) {
-      case 'recenter': this.recenter(); break;
-      case 'favorite': this.favorite(); break;
-      case 'share':    this.share();    break;
-      default: break; // cancel/Backdrop
-    }    
-
-
-  }
-
-  openSheetOld() {
+  openSheet() {
     this.sheetOpen = true;
     document.body.classList.remove('map-active'); // Map-Transparenz aus
   }
@@ -149,10 +131,16 @@ export class Tab1Page {
   }
 
     
-  recenter() {
-    console.log('recenter ...'); 
+  leaveMessage() {
+    console.log('leave message here ...'); 
+    this.messageBoxOpen = true;
     /* ... */ 
   }
+
+  recommend() {
+
+  }
+
 
   favorite() { 
     console.log('favorite ...');

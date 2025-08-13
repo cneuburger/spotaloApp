@@ -1,4 +1,5 @@
 .map-page { 
+    position: relative;
     background: transparent !important;
     --background: transparent !important;
 }
@@ -11,15 +12,17 @@ capacitor-google-map {
     width:100%; 
     height:100%; 
 }
-.debug-btn{
-  position: fixed;
-  right: 16px;
-  bottom: 16px;
-  z-index: 99999;
-  padding: 14px 16px;
-  border: 0;
-  border-radius: 9999px;
-  background: #1a73e8;   /* knallige Farbe */
-  color: #fff;
-  box-shadow: 0 8px 24px rgba(0,0,0,.2);
+
+.sheet{
+  position: fixed; inset:0; background:rgba(0,0,0,.32);
+  opacity:0; pointer-events:none; transition:opacity .2s ease; z-index:10000;
 }
+.sheet-panel{
+  position:absolute; left:0; right:0; bottom:0;
+  background:#fff; color:#000; border-radius:16px 16px 0 0;
+  min-height:70vh; max-height:90vh; transform:translateY(100%);
+  transition: transform .24s ease; padding:12px 12px calc(24px + env(safe-area-inset-bottom,0));
+}
+.sheet-handle{ width:36px; height:4px; border-radius:2px; background:rgba(0,0,0,.2); margin:8px auto 12px; }
+.sheet.open{ opacity:1; pointer-events:auto; }
+.sheet.open .sheet-panel{ transform:translateY(0); }
