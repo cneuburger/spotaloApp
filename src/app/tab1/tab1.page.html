@@ -1,32 +1,64 @@
-<ion-content class="map-page">
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Tab 1 | {{locAvailable}}
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="map-page" fullscreen="false">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Tab 1a</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  
+  @if (!locAvailable) {
+    <div><br><p>GPS wird gesucht ...</p></div>
+  }
+
   <div class="map-wrap">
     <capacitor-google-map #mapEl></capacitor-google-map>
   </div>
 
-  <ion-button expand="full">test</ion-button>
-  <ion-button (click)="openSheet()">Open2</ion-button>
+  <ion-button expand="true" (click)="sheetOpen=true" style="position: absolute; bottom: 0;">Open1</ion-button>
 
-  <!-- Custom Sheet -->
-  <div class="sheet" [class.open]="sheetOpen" (click)="sheetOpen=false">
-    <div class="sheet-panel" (click)="$event.stopPropagation()">
+  <!-- Backdrop & Sheet FIXIERT rendern -->
+
+  <div class="sheet-backdrop" slot="fixed"
+       [class.open]="sheetOpen"
+       (click)="sheetOpen=false"></div>
+
+  <div class="sheet" slot="fixed"
+       [class.open]="sheetOpen"
+       (click)="$event.stopPropagation()">
+    <div class="sheet-panel">
       <div class="sheet-handle"></div>
-      <h3 class="ion-margin-bottom">Aktionen</h3>
+      <h3 class="ion-margin-bottom">Aktionen 4</h3>
+      <ion-button expand="full">testbutton 4</ion-button>
+
+      <ion-card>
+        <ion-card-content>
+          Test 4
+        </ion-card-content>
+      </ion-card>
+
       <ion-list>
         <ion-item button (click)="leaveMessage(); sheetOpen=false">
           <ion-icon slot="start" name="locate"></ion-icon>
-          <ion-label>Hier Nachricht hinterlassen</ion-label>
+          <ion-label>Hier Nachricht hinterlassen 4</ion-label>
         </ion-item>
         <ion-item button (click)="recommend(); sheetOpen=false">
           <ion-icon slot="start" name="heart"></ion-icon>
-          <ion-label>Diesen Ort empfehlen</ion-label>
-        </ion-item>          
+          <ion-label>Diesen Ort empfehlen 4</ion-label>
+        </ion-item>
         <ion-item button (click)="share(); sheetOpen=false">
           <ion-icon slot="start" name="share-social"></ion-icon>
-          <ion-label>Teilen ...</ion-label>
+          <ion-label>Teilen ... 4</ion-label>
         </ion-item>
       </ion-list>
     </div>
-  </div>  
+  </div>
 
   <div class="sheet" [class.open]="messageBoxOpen" (click)="messageBoxOpen=false">
     <div class="sheet-panel" (click)="$event.stopPropagation()">
@@ -43,5 +75,5 @@
       </ion-list>
     </div>
   </div>
-  <ion-button (click)="sheetOpen=true" style="position: absolute; bottom: 0;">Open1</ion-button>
+  
 </ion-content>

@@ -1,6 +1,5 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, ViewChild } from '@angular/core';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonTextarea } from '@ionic/angular/standalone';
-import { ExploreContainerComponent } from '../explore-container/explore-container.component';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, NgModule, ViewChild } from '@angular/core';
+import { IonContent, IonButton, IonTextarea, IonCardContent, IonItem, IonCard, IonLabel, IonList, IonIcon } from '@ionic/angular/standalone';
 import { GoogleMap } from '@capacitor/google-maps';
 import { LocationService } from '../services/location.service';
 import { ApiService } from '../services/api.service';
@@ -14,7 +13,7 @@ import { FormsModule } from '@angular/forms';
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss'],
   standalone: true,
-  imports: [IonContent, IonButton, FormsModule, IonTextarea],
+  imports: [IonIcon, IonList, IonLabel, IonCard, IonItem, IonContent, IonButton, FormsModule, IonTextarea, IonCardContent, IonCardContent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class Tab1Page {
@@ -27,6 +26,7 @@ export class Tab1Page {
   sheetOpen: boolean = false;
   messageBoxOpen: boolean = false;
   textMessage: string = '';
+  locAvailable: boolean = false;
 
   constructor(
     private locationService: LocationService,
@@ -35,11 +35,10 @@ export class Tab1Page {
   ) {}
 
   async ngAfterViewInit() {
-//    await this.initMap(); // wie oben
+  //  await this.initMap(); // wie oben
   }
 
   ionViewDidEnter() { 
-
     requestAnimationFrame(() => this.initMap());
     this.initMap(); 
   }
@@ -54,18 +53,19 @@ export class Tab1Page {
 
   async initMap() {
     const el = this.mapEl.nativeElement;
-    // await this.locationService.initGeoLocation();
-    // const loc = this.locationService.locationData;
+    await this.locationService.initGeoLocation();
+    const loc = this.locationService.locationData;
+    this.locAvailable = true;
 
-    const loc = true;
+    //const loc = true;
 
     if (loc) { 
 
-      //let lat: number = loc.lat; 
-      //let lng: number = loc.lng; 
+      let lat: number = loc.lat; 
+      let lng: number = loc.lng; 
 
-      let lat: number = 48.24817;
-      let lng: number = 13.19592;      
+      //let lat: number = 48.24817;
+      //let lng: number = 13.19592;      
 
       this.appUserLatitude = lat;
       this.appUserLongitude = lng;
@@ -95,7 +95,7 @@ export class Tab1Page {
         animate: false,
       });
 
-      console.log('position in tab2', JSON.stringify(loc));
+      console.log('position in tab1: ', JSON.stringify(loc));
     } else {
       console.error('Location nicht verfügbar');
     }    
@@ -120,10 +120,6 @@ export class Tab1Page {
     this.messageBoxOpen = false;
   }
 
-  openSheet() {
-    this.sheetOpen = true;
-    document.body.classList.remove('map-active'); // Map-Transparenz aus
-  }
 
   onSheetDismiss() {
     this.sheetOpen = false;
