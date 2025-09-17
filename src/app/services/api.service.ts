@@ -11,7 +11,7 @@ export class ApiService {
 
   constructor() { }
 
-    async postSpot(params?: any) {
+  async postSpot(params?: any) {
     const options={
       method: 'POST',
       url: this.apiEndpoint + 'spots',
@@ -25,5 +25,18 @@ export class ApiService {
     const response:HttpResponse=await CapacitorHttp.post(options);
     return response;
   }
+
+  async getSpots(params?: any) {
+    const options={
+      method: 'GET',
+      url: this.apiEndpoint + 'spots',
+      headers: {
+        apikey: this.apiKey
+      },
+    }
+
+    const response:HttpResponse=await CapacitorHttp.get(options);
+    return response;
+  }  
 
 }

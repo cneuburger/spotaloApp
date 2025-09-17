@@ -7,6 +7,17 @@ import { environment } from 'src/environments/environment';
 import { ModalController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 
+type Spot = {
+  idSpot: number;
+  latitude: string;   // kommt als String
+  longitude: string;  // kommt als String
+  text: string;
+  category: number;
+  createdAt: string;
+  createdFrom: number;
+  published: number;  // 1 = sichtbar
+};
+
 
 @Component({
   selector: 'app-tab1',
@@ -27,6 +38,7 @@ export class Tab1Page {
   messageBoxOpen: boolean = false;
   textMessage: string = '';
   locAvailable: boolean = false;
+  spots: any;
 
   constructor(
     private locationService: LocationService,
@@ -40,7 +52,7 @@ export class Tab1Page {
 
   ionViewDidEnter() { 
     requestAnimationFrame(() => this.initMap());
-    this.initMap(); 
+    // this.initMap(); 
   }
 
   ionViewWillEnter() {
@@ -56,7 +68,6 @@ export class Tab1Page {
     await this.locationService.initGeoLocation();
     const loc = this.locationService.locationData;
     this.locAvailable = true;
-
     //const loc = true;
 
     if (loc) { 
@@ -95,10 +106,74 @@ export class Tab1Page {
         animate: false,
       });
 
+      this.getSpotlist();
+
       console.log('position in tab1: ', JSON.stringify(loc));
     } else {
       console.error('Location nicht verfügbar');
     }    
+  }
+
+
+  async getSpotlist() {
+    let apiResponse = null;
+    console.log('textmessage: ', this.textMessage);
+
+    const params = {
+      createdFrom: 1,
+      category: 1,
+      latitude: this.appUserLatitude,
+      longitude: this.appUserLongitude
+    };
+
+    apiResponse = await this.apiService.getSpots(params);
+    this.spots = apiResponse.data;
+    console.log('spots: ' , JSON.stringify(this.spots));
+    this.addSpotsToMap(this.spots);
+  }
+
+
+  async addSpotsToMap(spotsResponse: { data: Spot[] }) {
+    const markers = spotsResponse.data
+      // nur veröffentlichte Spots
+      .filter(s => s.published === 1)
+      // in Marker-Struktur transformieren
+      .map(s => {
+        const lat = this.toNum(s.latitude);
+        const lng = this.toNum(s.longitude);
+        return {
+          id: s.idSpot,
+          lat, lng,
+          title: (s.text ?? "").trim() || `Spot #${s.idSpot}`,
+        };
+      })
+      // ungültige Koordinaten raus
+      .filter(m => m.lat !== null && m.lng !== null && !(m.lat === 0 && m.lng === 0));
+
+    if (markers.length === 0) return;
+
+    // -> Capacitor Google Maps erwartet: { coordinate: { lat, lng }, title? }
+    const markerOpts = markers.map(m => ({
+      coordinate: { lat: m.lat as number, lng: m.lng as number },
+      title: m.title,
+      // optional: snippet, iconUrl, opacity, draggable, ...
+    }));
+
+    // Performant in einem Rutsch hinzufügen
+    await this.map?.addMarkers(markerOpts);
+
+    // optional: Karte grob auf die Marker zentrieren (einfacher Mittelwert)
+    /*
+    const avgLat = markers.reduce((a, b) => a + (b.lat as number), 0) / markers.length;
+    const avgLng = markers.reduce((a, b) => a + (b.lng as number), 0) / markers.length;
+    await this.map?.setCamera({
+      coordinate: { lat: avgLat, lng: avgLng },
+      zoom: 12, // nach Bedarf anpassen
+    });
+*/
+    // optional: Click-Listener pro Marker
+    // (je nach Plugin-Version entweder globaler Listener oder per Marker-ID)
+    // this.map.setOnMarkerClickListener(({ markerId }) => { ... });
   }
 
 
@@ -118,6 +193,7 @@ export class Tab1Page {
     apiResponse = await this.apiService.postSpot(params);
     this.textMessage = '';
     this.messageBoxOpen = false;
+    this.getSpotlist();
   }
 
 
@@ -148,4 +224,11 @@ export class Tab1Page {
     /* ... */ 
   }
 
+
+  
+  toNum(v: string | number | null | undefined): number | null {
+    if (v == null) return null;
+    const n = typeof v === "number" ? v : parseFloat(String(v).replace(",", "."));
+    return Number.isFinite(n) ? n : null;
+  }
 }
