@@ -40,6 +40,9 @@ export class Tab1Page {
   locAvailable: boolean = false;
   spots: any;
 
+  private markerGroups: Record<number, string[]> = {};      // category -> [markerId, ...]
+  private markerIdBySpotId = new Map<number, string>();   
+
   constructor(
     private locationService: LocationService,
     private apiService: ApiService,
@@ -96,9 +99,11 @@ export class Tab1Page {
         },
       });
 
-      await this.map.addMarker(
-        { coordinate: { lat: lat, lng: lng }, title: 'mein Standort' },
-      );
+      await this.map.addMarker({ 
+        coordinate: { lat: lat, lng: lng }, 
+        title: 'mein Standort',
+        iconUrl: 'assets/icons/marker-user.png' 
+      });
 
       await this.map.setCamera({
         coordinate: { lat: lat, lng: lng },
@@ -112,6 +117,11 @@ export class Tab1Page {
     } else {
       console.error('Location nicht verfügbar');
     }    
+  }
+
+
+  async addNewSpot() {
+
   }
 
 
@@ -134,6 +144,53 @@ export class Tab1Page {
 
 
   async addSpotsToMap(spotsResponse: { data: Spot[] }) {
+    const valid = spotsResponse.data
+      .filter(s => s.published === 1)
+      .map(s => ({
+        spot: s,
+        lat: this.toNum(s.latitude),
+        lng: this.toNum(s.longitude),
+        title: (s.text ?? "").trim() || `Spot #${s.idSpot}`,
+      }))
+      .filter(m => m.lat !== null && m.lng !== null && !(m.lat === 0 && m.lng === 0));
+
+    if (valid.length === 0) return;
+
+    const markerOpts = valid.map(m => ({
+      coordinate: { lat: m.lat as number, lng: m.lng as number },
+      title: m.title,
+      // iconUrl: getIconForCategory(m.spot.category) // optional
+    }));
+
+    // Wichtig: addMarkers liefert ein Array mit Marker-Infos inkl. id zurück
+    if (!this.map) return;
+    const ids: string[] = await this.map.addMarkers(markerOpts); // [{ id: string }, ...]
+ //   if (!added) return;
+
+
+    // Zuordnungen speichern
+    valid.forEach((v, idx) => {
+      const markerId = ids[idx];   // ist ein string
+      this.markerIdBySpotId.set(v.spot.idSpot, markerId);
+
+      const cat = v.spot.category ?? 0;
+      if (!this.markerGroups[cat]) this.markerGroups[cat] = [];
+      this.markerGroups[cat].push(markerId);
+    });
+  }
+
+
+  async setCategoryVisible(category: number, visible: boolean) {
+    const ids = this.markerGroups[category] ?? [];
+    /*
+    await Promise.all(
+      ids.map(id => this.map.setMarkerVisibility({ markerId: id, visible }))
+    );
+    */
+  }
+
+
+  async addSpotsToMapOld(spotsResponse: { data: Spot[] }) {
     const markers = spotsResponse.data
       // nur veröffentlichte Spots
       .filter(s => s.published === 1)
@@ -155,25 +212,12 @@ export class Tab1Page {
     // -> Capacitor Google Maps erwartet: { coordinate: { lat, lng }, title? }
     const markerOpts = markers.map(m => ({
       coordinate: { lat: m.lat as number, lng: m.lng as number },
-      title: m.title,
+      title: m.title
       // optional: snippet, iconUrl, opacity, draggable, ...
     }));
 
     // Performant in einem Rutsch hinzufügen
     await this.map?.addMarkers(markerOpts);
-
-    // optional: Karte grob auf die Marker zentrieren (einfacher Mittelwert)
-    /*
-    const avgLat = markers.reduce((a, b) => a + (b.lat as number), 0) / markers.length;
-    const avgLng = markers.reduce((a, b) => a + (b.lng as number), 0) / markers.length;
-    await this.map?.setCamera({
-      coordinate: { lat: avgLat, lng: avgLng },
-      zoom: 12, // nach Bedarf anpassen
-    });
-*/
-    // optional: Click-Listener pro Marker
-    // (je nach Plugin-Version entweder globaler Listener oder per Marker-ID)
-    // this.map.setOnMarkerClickListener(({ markerId }) => { ... });
   }
 
 
