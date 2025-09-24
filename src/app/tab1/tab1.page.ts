@@ -6,6 +6,7 @@ import { ApiService } from '../services/api.service';
 import { environment } from 'src/environments/environment';
 import { ModalController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
+import { Capacitor } from '@capacitor/core';
 
 type Spot = {
   idSpot: number;
@@ -31,6 +32,7 @@ const mercYToLat = (y: number) => {
 
 // 33% von oben => relative Position zum Center = 0.33 - 0.50 = -0.17
 const V_OFFSET = 0.17;
+const isNative = Capacitor.getPlatform() !== 'web';
 
 @Component({
   selector: 'app-tab1',
@@ -105,7 +107,7 @@ export class Tab1Page {
         element: el,
         apiKey: environment.googleMapsApiKey, 
         config: {
-          center: { lat: lat, lng: lng }, // Wien 😉
+          center: { lat: lat, lng: lng },
           zoom: 12,
           disableDefaultUI: false,
           minZoom: 2,
@@ -123,7 +125,7 @@ export class Tab1Page {
 
       await this.map.setCamera({
         coordinate: { lat: lat, lng: lng },
-        zoom: 16,
+        zoom: 12,
         animate: false,
       });
 
