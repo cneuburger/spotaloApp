@@ -49,6 +49,53 @@ capacitor-google-map {
   background: var(--ion-color-step-200, #e5e7eb);
 }
 
+
+    /* Fadenkreuz-Overlay (immer zentriert) */
+    .crosshair {
+      position: absolute;
+      left: 50%;
+      top: 33%;
+      width: 40px;      /* Größe anpassen */
+      height: 40px;
+      transform: translate(-50%, -50%);
+      pointer-events: none; /* nicht klickbar */
+    }
+    /* Linien (haarscharf, ohne Anti-Aliasing-Tricks) */
+    .crosshair.is-hidden { opacity:0; visibility:hidden; }
+    .crosshair::before,
+    .crosshair::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+    /* Vertikale Linie */
+    .crosshair::before {
+      width: 1px;
+      height: 100px;     /* etwas kleiner als Box */
+      background: #333; /* Farbe */
+    }
+    /* Horizontale Linie */
+    .crosshair::after {
+      width: 100px;
+      height: 1px;
+      background: #333;
+    }
+    /* Kleiner Kreis in der Mitte (optional) */
+    .crosshair > span {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 25px;       /* Kreis-Durchmesser */
+      height: 25px;
+      border: 2px solid #333;
+      border-radius: 9999px;
+      transform: translate(-50%, -50%);
+      box-sizing: border-box;
+      background: rgba(255,255,255,0.6);
+    }
+
 /*
 .sheet{
   position: fixed; inset:0; background:rgba(0,0,0,.32);

@@ -18,6 +18,19 @@ type Spot = {
   published: number;  // 1 = sichtbar
 };
 
+const MAX_LAT = 85.05112878; // Web-Mercator Clamp
+const clampLat = (lat: number) => Math.max(-MAX_LAT, Math.min(MAX_LAT, lat));
+const latToMercY = (lat: number) => {
+  const φ = clampLat(lat) * Math.PI / 180;
+  return Math.log(Math.tan(Math.PI / 4 + φ / 2));
+};
+const mercYToLat = (y: number) => {
+  const φ = 2 * Math.atan(Math.exp(y)) - Math.PI / 2;
+  return φ * 180 / Math.PI;
+};
+
+// 33% von oben => relative Position zum Center = 0.33 - 0.50 = -0.17
+const V_OFFSET = 0.17;
 
 @Component({
   selector: 'app-tab1',
@@ -39,6 +52,7 @@ export class Tab1Page {
   textMessage: string = '';
   locAvailable: boolean = false;
   spots: any;
+  mapCenter: { lat: number; lng: number } | null = null;
 
   private markerGroups: Record<number, string[]> = {};      // category -> [markerId, ...]
   private markerIdBySpotId = new Map<number, string>();   
@@ -47,10 +61,12 @@ export class Tab1Page {
     private locationService: LocationService,
     private apiService: ApiService,
     private modalCtrl: ModalController
-  ) {}
+  ) {
+    
+  }
 
   async ngAfterViewInit() {
-  //  await this.initMap(); // wie oben
+    this.setCrosshairVisible(false);
   }
 
   ionViewDidEnter() { 
@@ -111,12 +127,70 @@ export class Tab1Page {
         animate: false,
       });
 
+      await this.map.setOnCameraIdleListener(async () => {
+        this.mapCenter = await this.getCrosshairAt33Percent();
+        console.log('Aktuelles Center:', this.mapCenter);
+      });
+
       this.getSpotlist();
 
       console.log('position in tab1: ', JSON.stringify(loc));
     } else {
       console.error('Location nicht verfügbar');
     }    
+  }
+
+
+  async getCrosshairAt33Percent() {
+    const bounds = await this.map?.getMapBounds();
+    if (!bounds) return null;
+
+    // Bounds
+    const { southwest: sw, northeast: ne } = bounds;
+
+    // Längengrad (x) ist in Mercator linear ⇒ Center bleibt gleich (kein horizontaler Offset)
+    const lngCenter = (sw.lng + ne.lng) / 2;
+
+    // In Mercator-Y umrechnen
+    const yS = latToMercY(sw.lat);
+    const yN = latToMercY(ne.lat);
+    const yC = (yS + yN) / 2;
+    const yRange = yN - yS;
+
+    // Nach oben verschieben (negativ = Richtung Norden/oben)
+    const yCross = yC + V_OFFSET * yRange;
+
+    // Zurück nach Lat
+    const latCrosshair = mercYToLat(yCross);
+
+    return { lat: latCrosshair, lng: lngCenter };
+  }
+
+
+  setCrosshairVisible(show: boolean) {
+    const el = document.getElementById('crosshair');
+    if (show) {
+      el?.classList.remove('is-hidden');
+    } else {
+      el?.classList.add('is-hidden');
+    }
+  }
+
+
+  async getCenter() {
+    const bounds = await this.map?.getMapBounds();
+
+    if (bounds) {
+      const latCenter  = (bounds.southwest.lat + bounds.northeast.lat) / 2;
+      const lngCenter  = (bounds.southwest.lng + bounds.northeast.lng) / 2;
+
+      const latDiff = bounds.northeast.lat - bounds.southwest.lat;
+      const latCrosshair = latCenter  + latDiff * 0.17; 
+    
+      return { latCrosshair, lngCenter };
+    } else {
+      return null;
+    } 
   }
 
 
@@ -230,14 +304,22 @@ export class Tab1Page {
       createdFrom: 1,
       text: this.textMessage,
       category: 1,
-      latitude: this.appUserLatitude,
-      longitude: this.appUserLongitude
+      latitude: this.mapCenter?.lat ?? this.appUserLatitude,
+      longitude: this.mapCenter?.lng ?? this.appUserLongitude
     };
 
     apiResponse = await this.apiService.postSpot(params);
     this.textMessage = '';
     this.messageBoxOpen = false;
+    this.setCrosshairVisible(false);
     this.getSpotlist();
+  }
+
+
+  async cancelMessage() {
+    this.textMessage = '';
+    this.messageBoxOpen = false;
+    this.setCrosshairVisible(false);
   }
 
 
@@ -249,6 +331,7 @@ export class Tab1Page {
     
   leaveMessage() {
     console.log('leave message here ...'); 
+    this.setCrosshairVisible(true);
     this.messageBoxOpen = true;
     /* ... */ 
   }
