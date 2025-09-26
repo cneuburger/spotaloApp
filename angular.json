@@ -35,7 +35,12 @@
                 "output": "assets"
               }
             ],
-            "styles": ["src/global.scss", "src/theme/variables.scss"],
+            "styles": [
+              "src/global.scss", 
+              "src/theme/variables.scss",
+              "node_modules/mapbox-gl/dist/mapbox-gl.css",
+              "node_modules/@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css"
+            ],
             "scripts": [],
             "browser": "src/main.ts"
           },

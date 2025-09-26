@@ -1,0 +1,40 @@
+:host {
+  ion-content, .map-container {
+    height: 100%;
+  }
+}
+
+.map-container {
+  position: absolute;
+  inset: 0;
+  height: 100% !important;
+  width: 100% !important;
+}
+
+.area-badge {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  font-weight: 600;
+  z-index: 10;
+}
+
+/* Map-Container nicht unter den Header zeichnen */
+ion-content[fullscreen] .map-container {
+  position: absolute;
+  top: calc(var(--ion-safe-area-top, 0px) + var(--ion-toolbar-height, 56px));
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+/* Falls die Controls trotzdem am Rand kleben, etwas Abstand geben */
+.mapboxgl-ctrl-top-left,
+.mapboxgl-ctrl-top-right {
+  z-index: 10; /* sicher über der Karte */
+  margin-top: calc(var(--ion-safe-area-top, 0px) + var(--ion-toolbar-height, 56px));
+}
