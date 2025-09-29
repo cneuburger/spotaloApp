@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton, IonIcon } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton } from '@ionic/angular/standalone';
 import { environment } from 'src/environments/environment';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import mapboxgl from 'mapbox-gl';
@@ -10,7 +10,7 @@ import type { FeatureCollection, Polygon } from 'geojson';
   selector: 'app-tab2',
   templateUrl: 'tab2.page.html',
   styleUrls: ['tab2.page.scss'],
-  imports: [IonIcon, IonFabButton, IonFab, IonContent]
+  imports: [IonFabButton, IonFab, IonContent]
 })
 export class Tab2Page {
 
