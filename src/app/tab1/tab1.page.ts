@@ -57,6 +57,10 @@ export class Tab1Page {
   spots: any;
   mapCenter: { lat: number; lng: number } | null = null;
   currentAddIconClass: string = 'fa-solid fa-plus'; // Standard-Icon-Klasse
+  currentAddIconSrc: string = 'assets/icons/icon_tree_32.png';
+  activeMarkerId: string = '';
+  activeMarkerPos: any;
+  clickMarkerId?: string;
 
   private markerGroups: Record<number, string[]> = {};      // category -> [markerId, ...]
   private markerIdBySpotId = new Map<number, string>();   
@@ -125,6 +129,28 @@ export class Tab1Page {
         iconUrl: 'assets/icons/marker-user_8.png' 
       });
 
+      const movableMarkerId = await this.map.addMarker({ 
+        coordinate: { lat: lat, lng: lng }, 
+        title: 'Aktiver Pin',
+        iconUrl: 'assets/icons/marker-poi_8.png',
+        draggable: true
+      });
+
+
+      this.activeMarkerId = movableMarkerId;
+
+
+      await this.map.setOnMarkerDragEndListener((event) => {
+        // optional: zur Sicherheit nach ID filtern
+        if (event.markerId === this.activeMarkerId) {
+          this.activeMarkerPos = {
+            lat: event.latitude,
+            lng: event.longitude,
+          };
+          console.log('Verschiebbarer Marker jetzt bei:', this.activeMarkerPos);
+        }
+      });      
+
       await this.map.setCamera({
         coordinate: { lat: lat, lng: lng },
         zoom: 18,
@@ -136,6 +162,16 @@ export class Tab1Page {
         console.log('Aktuelles Center:', this.mapCenter);
       });
 
+      await this.map.setOnMapClickListener(async (event) => {
+        console.log('Map Click:', event);
+
+        const lat = event.latitude;
+        const lng = event.longitude;
+
+        await this.setClickMarker(lat, lng);
+      });
+
+
       this.getSpotlist();
 
       console.log('position in tab1: ', JSON.stringify(loc));
@@ -143,6 +179,29 @@ export class Tab1Page {
       console.error('Location nicht verfügbar');
     }    
   }
+
+
+  async setClickMarker(lat: number, lng: number) {
+
+    if (!this.map) return;
+
+    // Falls schon ein Klick-Marker existiert, kannst du ihn optional entfernen
+    /*
+    if (this.clickMarkerId) {
+      await this.map.removeMarker(this.clickMarkerId);
+    }
+    */
+
+    // Neuen Marker an Klick-Position setzen
+    this.clickMarkerId = await this.map.addMarker({
+      coordinate: { lat, lng },
+      title: 'Ausgewählter Punkt',
+      draggable: true, // wenn du ihn auch danach noch verschiebbar haben willst
+      iconUrl: this.currentAddIconSrc
+    });
+
+    console.log('Neuer Klick-Marker:', this.clickMarkerId, lat, lng);
+  }  
 
 
   async getCrosshairAt33Percent() {
@@ -372,12 +431,15 @@ export class Tab1Page {
     switch (pinType) {
       case 'tree':
         this.currentAddIconClass = 'fa-solid fa-tree';
+        this.currentAddIconSrc = 'assets/icons/icon_tree_32.png';
         break;
-      case 'map-pin':
-        this.currentAddIconClass = 'fa-solid fa-map-pin';
+      case 'star':
+        this.currentAddIconClass = 'fa-solid fa-star';
+        this.currentAddIconSrc = 'assets/icons/icon_star_32.png';
         break;      
       case 'info':
         this.currentAddIconClass = 'fa-solid fa-circle-info';
+        this.currentAddIconSrc = 'assets/icons/icon_info_32.png';
         break;
     }
   }
