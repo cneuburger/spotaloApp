@@ -1,0 +1,115 @@
+.map-page { 
+    position: relative;
+    background: transparent !important;
+    --background: transparent !important;
+}
+.map-wrap {
+    position: absolute;
+    inset: 0; /* top:0; right:0; bottom:0; left:0 */
+}
+capacitor-google-map { 
+    display:block; 
+    width:100%; 
+    height:100%;
+    /* height: calc(100vh - var(--ion-toolbar-height, 56px) - var(--ion-safe-area-top, 0px)); */
+    margin-top: calc(var(--ion-toolbar-height, 0) + var(--ion-safe-area-top, 0px)); 
+}
+
+/* Backdrop */
+.sheet-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.4);
+  opacity: 0; pointer-events: none;
+  transition: opacity .2s ease;
+  z-index: 10000;
+}
+.sheet-backdrop.open { opacity: 1; pointer-events: auto; }
+
+/* Sheet-Container (Bottom Sheet) */
+.sheet {
+  position: fixed; left: 0; right: 0;
+  bottom: 0;
+  transform: translateY(100%);
+  transition: transform .25s ease-out;
+  z-index: 10001;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px));
+}
+.sheet.open { transform: translateY(0); }
+
+/* Panel */
+.sheet-panel {
+  margin: 0 12px;
+  border-top-left-radius: 16px; border-top-right-radius: 16px;
+  background: var(--ion-background-color, #fff);
+  box-shadow: 0 -8px 24px rgba(0,0,0,.2);
+  padding: 12px 16px calc(env(safe-area-inset-bottom, 0px) + 12px);
+}
+
+/* Handle */
+.sheet-handle {
+  width: 40px; height: 4px; border-radius: 999px; margin: 6px auto 12px;
+  background: var(--ion-color-step-200, #e5e7eb);
+}
+
+
+    /* Fadenkreuz-Overlay (immer zentriert) */
+    .crosshair {
+      position: absolute;
+      left: 50%;
+      top: 33%;
+      width: 40px;      /* Größe anpassen */
+      height: 40px;
+      transform: translate(-50%, -50%);
+      pointer-events: none; /* nicht klickbar */
+    }
+    /* Linien (haarscharf, ohne Anti-Aliasing-Tricks) */
+    .crosshair.is-hidden { opacity:0; visibility:hidden; }
+    .crosshair::before,
+    .crosshair::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+    /* Vertikale Linie */
+    .crosshair::before {
+      width: 1px;
+      height: 100px;     /* etwas kleiner als Box */
+      background: #333; /* Farbe */
+    }
+    /* Horizontale Linie */
+    .crosshair::after {
+      width: 100px;
+      height: 1px;
+      background: #333;
+    }
+    /* Kleiner Kreis in der Mitte (optional) */
+    .crosshair > span {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 25px;       /* Kreis-Durchmesser */
+      height: 25px;
+      border: 2px solid #333;
+      border-radius: 9999px;
+      transform: translate(-50%, -50%);
+      box-sizing: border-box;
+      background: rgba(255,255,255,0.6);
+    }
+
+/*
+.sheet{
+  position: fixed; inset:0; background:rgba(0,0,0,.32);
+  opacity:0; pointer-events:none; transition:opacity .2s ease; z-index:10000;
+}
+.sheet-panel{
+  position:absolute; left:0; right:0; bottom:0;
+  background:#fff; color:#000; border-radius:16px 16px 0 0;
+  min-height:70vh; max-height:90vh; transform:translateY(100%);
+  transition: transform .24s ease; padding:12px 12px calc(24px + env(safe-area-inset-bottom,0));
+}
+.sheet-handle{ width:36px; height:4px; border-radius:2px; background:rgba(0,0,0,.2); margin:8px auto 12px; }
+.sheet.open{ opacity:1; pointer-events:auto; }
+.sheet.open .sheet-panel{ transform:translateY(0); }
+*/

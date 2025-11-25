@@ -1,17 +1,91 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Tab 3
+      Tab 1 | {{locAvailable}}
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content class="map-page" fullscreen="false">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Tab 3</ion-title>
+      <ion-title size="large">Tab 1a</ion-title>
     </ion-toolbar>
   </ion-header>
+  
+  @if (!locAvailable) {
+    <div><br><p>GPS wird gesucht ...</p></div>
+  }
 
-  <app-explore-container name="Tab 3 page"></app-explore-container>
+  <div class="map-wrap">
+    <capacitor-google-map #mapEl2></capacitor-google-map>
+    <div id="crosshair2" class="crosshair" aria-hidden="true"><span></span></div>
+  </div>
+
+  <!--
+  <ion-button expand="true" (click)="sheetOpen=true" style="position: absolute; bottom: 0;">Open1</ion-button>
+  -->
+
+  <!--
+  <ion-button expand="true" (click)="leaveMessage(); sheetOpen=false" style="position: absolute; bottom: 0;">Open2</ion-button>
+-->
+  <!-- Backdrop & Sheet FIXIERT rendern -->
+
+  <div class="sheet-backdrop" slot="fixed"
+       [class.open]="sheetOpen"
+       (click)="sheetOpen=false"></div>
+
+  <div class="sheet" slot="fixed"
+       [class.open]="sheetOpen"
+       (click)="$event.stopPropagation()">
+    <div class="sheet-panel">
+      <div class="sheet-handle"></div>
+      <h3 class="ion-margin-bottom">Aktionen 4</h3>
+      <ion-button expand="full">testbutton 4</ion-button>
+
+      <ion-card>
+        <ion-card-content>
+          Test 4
+        </ion-card-content>
+      </ion-card>
+
+      <ion-list>
+        <ion-item button (click)="leaveMessage(); sheetOpen=false">
+          <ion-icon slot="start" name="locate"></ion-icon>
+          <ion-label>Hier Nachricht hinterlassen 4</ion-label>
+        </ion-item>
+        <ion-item button (click)="recommend(); sheetOpen=false">
+          <ion-icon slot="start" name="heart"></ion-icon>
+          <ion-label>Diesen Ort empfehlen 4</ion-label>
+        </ion-item>
+        <ion-item button (click)="share(); sheetOpen=false">
+          <ion-icon slot="start" name="share-social"></ion-icon>
+          <ion-label>Teilen ... 4</ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+  </div>
+
+  <ion-fab vertical="bottom" horizontal="center" slot="fixed">
+    <ion-fab-button button (click)="leaveMessage(); sheetOpen=false">
+      <i class="fa-solid fa-add"></i>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>
+
+<div class="sheet" [class.open]="messageBoxOpen" (click)="messageBoxOpen=false">
+  <div class="sheet-panel" (click)="$event.stopPropagation()">
+    <div class="sheet-handle"></div>
+    <h3 class="ion-margin-bottom">Markierung setzen</h3>
+    <ion-list inset="true">
+      <ion-item>
+        <ion-textarea [(ngModel)]="textMessage" autoGrow="true" placeholder="Nachricht hinterlassen ..."></ion-textarea>
+      </ion-item>
+
+      <ion-item>
+        <ion-button type="button" expand="full" (click)="onSubmitMessage()">Nachricht senden</ion-button>
+        <ion-button type="button" expand="full" (click)="cancelMessage()">Abbrechen</ion-button>
+      </ion-item>
+    </ion-list>
+  </div>
+</div>

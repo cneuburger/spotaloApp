@@ -66,11 +66,41 @@
     </div>
   </div>
 
-  <ion-fab vertical="bottom" horizontal="center" slot="fixed">
-    <ion-fab-button button (click)="leaveMessage(); sheetOpen=false">
-      <i class="fa-solid fa-add"></i>
+  <ion-fab vertical="bottom" horizontal="start" slot="fixed">
+    <ion-fab-button (click)="onSetPinOnFreePos();">
+      <i [ngClass]="currentAddIconClass"></i>
     </ion-fab-button>
   </ion-fab>
+
+  <ion-fab vertical="bottom" horizontal="center" slot="fixed">
+    <ion-fab-button (click)="onSetPinOnUserPos();">
+      <i [ngClass]="currentAddIconClass"></i>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-fab slot="fixed" vertical="center" horizontal="end">
+    <ion-fab-button (click)="locateAndCenterUser()">
+      <i class="fa-solid fa-location-crosshairs"></i>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button>
+      <i class="fa-solid fa-chevron-up"></i>
+    </ion-fab-button>
+    <ion-fab-list side="top">
+      <ion-fab-button (click)="selectPinType('tree')">
+        <i class="fa-solid fa-tree"></i>
+      </ion-fab-button>
+      <ion-fab-button (click)="selectPinType('map-pin')">
+        <i class="fa-solid fa-map-pin"></i>
+      </ion-fab-button>
+      <ion-fab-button (click)="selectPinType('info')">
+        <i class="fa-solid fa-circle-info"></i>
+      </ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>  
+
 </ion-content>
 
 <div class="sheet" [class.open]="messageBoxOpen" (click)="messageBoxOpen=false">

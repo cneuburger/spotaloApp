@@ -7,6 +7,7 @@ import { environment } from 'src/environments/environment';
 import { ModalController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { Capacitor } from '@capacitor/core';
+import { NgClass } from '@angular/common';
 
 type Spot = {
   idSpot: number;
@@ -39,7 +40,7 @@ const isNative = Capacitor.getPlatform() !== 'web';
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss'],
   standalone: true,
-  imports: [IonList, IonLabel, IonCard, IonItem, IonContent, IonButton, FormsModule, IonTextarea, IonCardContent, IonCardContent],
+  imports: [IonList, IonLabel, IonCard, IonItem, IonContent, IonButton, FormsModule, IonTextarea, IonCardContent, IonCardContent, NgClass],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class Tab1Page {
@@ -55,6 +56,7 @@ export class Tab1Page {
   locAvailable: boolean = false;
   spots: any;
   mapCenter: { lat: number; lng: number } | null = null;
+  currentAddIconClass: string = 'fa-solid fa-plus'; // Standard-Icon-Klasse
 
   private markerGroups: Record<number, string[]> = {};      // category -> [markerId, ...]
   private markerIdBySpotId = new Map<number, string>();   
@@ -120,12 +122,12 @@ export class Tab1Page {
       await this.map.addMarker({ 
         coordinate: { lat: lat, lng: lng }, 
         title: 'mein Standort',
-        iconUrl: 'assets/icons/marker-user.png' 
+        iconUrl: 'assets/icons/marker-user_8.png' 
       });
 
       await this.map.setCamera({
         coordinate: { lat: lat, lng: lng },
-        zoom: 12,
+        zoom: 18,
         animate: false,
       });
 
@@ -318,6 +320,41 @@ export class Tab1Page {
   }
 
 
+  async onSetPinOnFreePos() {
+    let apiResponse = null;
+    console.log('textmessage: ', this.textMessage);
+
+    const params = {
+      createdFrom: 1,
+      text: 'abcd',
+      category: 1,
+      latitude: this.appUserLatitude,
+      longitude: this.appUserLongitude
+    };
+
+    apiResponse = await this.apiService.postSpot(params);
+    this.getSpotlist();    
+  }
+
+
+  async onSetPinOnUserPos() {
+
+    let apiResponse = null;
+    console.log('textmessage: ', this.textMessage);
+
+    const params = {
+      createdFrom: 1,
+      text: 'abcd',
+      category: 1,
+      latitude: this.appUserLatitude,
+      longitude: this.appUserLongitude
+    };
+
+    apiResponse = await this.apiService.postSpot(params);
+    this.getSpotlist();
+  }  
+
+
   async cancelMessage() {
     this.textMessage = '';
     this.messageBoxOpen = false;
@@ -328,6 +365,31 @@ export class Tab1Page {
   onSheetDismiss() {
     this.sheetOpen = false;
     document.body.classList.add('map-active');    // Map-Transparenz wieder an
+  }
+
+
+  selectPinType(pinType: string) {
+    switch (pinType) {
+      case 'tree':
+        this.currentAddIconClass = 'fa-solid fa-tree';
+        break;
+      case 'map-pin':
+        this.currentAddIconClass = 'fa-solid fa-map-pin';
+        break;      
+      case 'info':
+        this.currentAddIconClass = 'fa-solid fa-circle-info';
+        break;
+    }
+  }
+
+
+  locateAndCenterUser() {
+    if (!this.map) return;
+    this.map.setCamera({
+      coordinate: { lat: this.locationService.locationData.lat, lng: this.locationService.locationData.lng}, // dein gespeicherter Standort
+      zoom: 18,
+      animate: true
+    });
   }
 
     
