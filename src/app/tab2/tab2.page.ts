@@ -30,7 +30,7 @@ export class Tab2Page {
 
     this.map = new mapboxgl.Map({
       container: this.mapContainer.nativeElement,
-      style: 'mapbox://styles/mapbox/streets-v12',
+      style: 'mapbox://styles/mapbox/satellite-streets-v12',
       center: [13.313, 47.695], // beliebiges Startzentrum
       // center: [48.2479, 13.1951], // beliebiges Startzentrum
       zoom: 12,

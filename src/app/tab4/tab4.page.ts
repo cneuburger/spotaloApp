@@ -42,7 +42,7 @@ export class Tab4Page {
       container: this.mapContainer.nativeElement,
       center: [13.313, 47.695],
       zoom: 17,
-      style: "https://kataster.bev.gv.at/styles/kataster/style_basic.json", // style URL or style object
+      style: "https://kataster.bev.gv.at/styles/kataster/style_gis.json", // style URL or style object
       // replace with your own
       accessToken:
         "pk.eyJ1IjoibWF0dXJhOTAiLCJhIjoiY2l0azJuZXAwMDA0MDN4bGkweWhwdGtwMCJ9.2VXOscIO4usCvn0A8MNVQw"
