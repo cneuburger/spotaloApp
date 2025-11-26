@@ -1,0 +1,12 @@
+<ion-content [fullscreen]="true">
+  <!-- Map-Container füllt die Seite -->
+  <div #mapContainer class="map-container"></div>
+
+  <!-- Trash-FAB -->
+  <ion-fab vertical="bottom" horizontal="center" slot="fixed">
+    <ion-fab-button (click)="clearAll()">
+      <i class="fa-solid fa-trash"></i>
+    </ion-fab-button>
+  </ion-fab>
+
+</ion-content>

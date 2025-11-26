@@ -1,0 +1,22 @@
+:host {
+  ion-content {
+    --padding-top: 0;
+    --padding-bottom: 0;
+    --padding-start: 0;
+    --padding-end: 0;
+    --background: transparent;
+  }
+}
+
+/* Karte vollflächig im ion-content, unter dem Header */
+.map-container {
+  position: absolute;
+  inset: 0;   // kein calc, wirklich 0,0,0,0
+}
+
+/* Optional: Controls nicht unter den Header klemmen */
+.mapboxgl-ctrl-top-left,
+.mapboxgl-ctrl-top-right {
+  z-index: 10;
+  margin-top: calc(var(--ion-safe-area-top, 0px) + var(--ion-toolbar-height, 56px));
+}

@@ -7,12 +7,12 @@ import area from '@turf/area';
 import type { FeatureCollection, Polygon } from 'geojson';
 
 @Component({
-  selector: 'app-tab2',
-  templateUrl: 'tab2.page.html',
-  styleUrls: ['tab2.page.scss'],
+  selector: 'app-tab4',
+  templateUrl: 'tab4.page.html',
+  styleUrls: ['tab4.page.scss'],
   imports: [IonFabButton, IonFab, IonContent]
 })
-export class Tab2Page {
+export class Tab4Page {
 
   @ViewChild('mapContainer', { static: true }) mapContainer!: ElementRef<HTMLDivElement>;
 
@@ -27,15 +27,26 @@ export class Tab2Page {
   ngAfterViewInit(): void {
 
     (mapboxgl as any).accessToken = environment.mapboxToken;
-
+/*
     this.map = new mapboxgl.Map({
       container: this.mapContainer.nativeElement,
       style: 'mapbox://styles/mapbox/streets-v12',
-      center: [13.313, 47.695], // beliebiges Startzentrum
+      center: [11.5761, 48.1374], // beliebiges Startzentrum
       // center: [48.2479, 13.1951], // beliebiges Startzentrum
       zoom: 12,
       attributionControl: false,
     });
+    */
+
+    this.map = new mapboxgl.Map({
+      container: this.mapContainer.nativeElement,
+      center: [13.313, 47.695],
+      zoom: 17,
+      style: "https://kataster.bev.gv.at/styles/kataster/style_basic.json", // style URL or style object
+      // replace with your own
+      accessToken:
+        "pk.eyJ1IjoibWF0dXJhOTAiLCJhIjoiY2l0azJuZXAwMDA0MDN4bGkweWhwdGtwMCJ9.2VXOscIO4usCvn0A8MNVQw"
+    });    
 
     this.map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
@@ -46,9 +57,10 @@ export class Tab2Page {
     });
     this.map.addControl(this.draw, 'top-left');
 
-        // ⬇️ WICHTIG: Nach dem Laden einmal resizen
+    // ⬇️ WICHTIG: Nach dem Laden einmal resizen
     this.map.on('load', () => {
       this.map?.resize();
+     // this.map?.setCenter([48.2479, 13.1951]);
     });
 
     const updateArea = () => {
