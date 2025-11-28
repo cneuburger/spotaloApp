@@ -5,6 +5,7 @@ import { Map, View } from 'ol';
 import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
 import { fromLonLat } from 'ol/proj';
+import {applyStyle, apply} from "ol-mapbox-style";
 
 @Component({
   selector: 'app-tab5',
@@ -28,6 +29,15 @@ export class Tab5Page {
         center: fromLonLat([0, 0]),
         zoom: 2
       })
+    });
+
+    
+    // Mapbox-Style vollautomatisch laden
+    apply(
+      this.map,
+      "../assets/ol/style_basic.json"
+    ).then(() => {
+      console.log("Kataster-Style geladen!");
     });
   }
 }
