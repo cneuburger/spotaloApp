@@ -4,8 +4,13 @@ import { environment } from 'src/environments/environment';
 import { Map, View } from 'ol';
 import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
+import VectorSource from 'ol/source/Vector';
+import { bbox as bboxStrategy } from 'ol/loadingstrategy';
 import { fromLonLat } from 'ol/proj';
+import VectorLayer from 'ol/layer/Vector';
 import {applyStyle, apply} from "ol-mapbox-style";
+import GeoJSON from 'ol/format/GeoJSON';
+import TileWMS from 'ol/source/TileWMS';
 
 @Component({
   selector: 'app-tab5',
@@ -16,15 +21,35 @@ import {applyStyle, apply} from "ol-mapbox-style";
 export class Tab5Page {
   @ViewChild('mapElement', { static: false }) mapElement!: ElementRef;
   map!: Map;
+  private vectorSource?: VectorSource;
 
   ngAfterViewInit() {
+
+    const baseLayer = new TileLayer({
+      source: new OSM()
+    });
+
+
+    const parzellarkarteLayer = new TileLayer({
+      source: new TileWMS({
+        url: 'https://geoservices.bayern.de/od/wms/alkis/v1/parzellarkarte?',
+        params: {
+          SERVICE: 'WMS',
+          VERSION: '1.3.0',
+          REQUEST: 'GetMap',
+          LAYERS: 'by_alkis_parzellarkarte_farbe', // aus deinem XML
+          STYLES: '',
+          FORMAT: 'image/png',
+          TRANSPARENT: true
+        },
+        serverType: 'geoserver' // oder 'mapserver' / 'qgis' – hier optional
+      })
+    });
+
+
     this.map = new Map({
       target: this.mapElement.nativeElement,
-      layers: [
-        new TileLayer({
-          source: new OSM()
-        })
-      ],
+      layers: [baseLayer, parzellarkarteLayer],
       view: new View({
         center: fromLonLat([0, 0]),
         zoom: 2
@@ -39,5 +64,6 @@ export class Tab5Page {
     ).then(() => {
       console.log("Kataster-Style geladen!");
     });
+    
   }
 }
